@@ -328,6 +328,21 @@ class WebApiContext implements ApiClientAwareContext
     }
 
     /**
+     * Returns the headers of the response.
+     *
+     * @return array Keyed by the header field name, names are in the case in which they were received over the wire.
+     *
+     * @throws \RuntimeException
+     */
+    protected function getResponseHeaders()
+    {
+      if (!isset($this->response)) {
+        throw new \RuntimeException('No Response available');
+      }
+      return $this->response->getHeaders();
+    }
+
+    /**
      * Adds header
      *
      * @param string $name
