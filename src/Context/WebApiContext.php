@@ -256,6 +256,31 @@ class WebApiContext implements ApiClientAwareContext
         }
     }
 
+    /** 
+     * Checks that response body is XML.
+     *
+     * @throws \RuntimeException If the XML object
+     *
+     * @Then /^(?:the )?response body should be [Xx][Mm][Ll]$/
+     */
+    public function theResponseBodyShouldbeXml()
+    {
+      $actual = $this->response->xml();  // \SimpleXMLElement object
+      Assertions::assertNotCount(0, array($actual));
+    }
+
+    /** 
+     * Retrieve the XML object that may be constructed from the Response body.
+     *
+     * @throws \RuntimeException If the an XML object can't be created.
+     *
+     * @return \SimpleXMLElement Xml object
+     */
+    public function getResponseAsXml()
+    {
+      return $this->response->xml();
+    }
+
     /**
      * Prints last response body.
      *
