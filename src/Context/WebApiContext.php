@@ -355,7 +355,8 @@ class WebApiContext implements ApiClientAwareContext
     /**
      * Returns the headers of the response.
      *
-     * @return array Keyed by the header field name, names are in the case in which they were received over the wire.
+     * @return array Keyed by the header field name, with the value being an array of strings.
+     *               Field names are in the case in which they were received over the wire.
      *
      * @throws \RuntimeException
      */
