@@ -21,7 +21,7 @@ use PHPUnit_Framework_Assert as Assertions;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class WebApiContext implements ApiClientAwareContext
+abstract class WebApiContext implements ApiClientAwareContext
 {
     /**
      * @var string
@@ -49,6 +49,15 @@ class WebApiContext implements ApiClientAwareContext
     private $response;
 
     private $placeHolders = array();
+
+    /**
+     * Derived class shall implement this method which permits us to resolve
+     * step parameter values that are prefixed with a "*", meaning that the value
+     * is a variable name and not the final value of the parameter that we are to us.
+     *
+     * @param string $varname The variable we wish to resolve
+     */
+    abstract function variableLookup($varname);
 
     /**
      * {@inheritdoc}
@@ -96,6 +105,9 @@ class WebApiContext implements ApiClientAwareContext
      */
     public function iSendARequest($method, $url)
     {
+        if ($url[0] === '*') {
+          $url = $this->variableLookup(substr($url, 1));
+        }
         $url = $this->prepareUrl($url);
         $this->request = $this->getClient()->createRequest($method, $url);
         if (!empty($this->headers)) {
@@ -116,6 +128,9 @@ class WebApiContext implements ApiClientAwareContext
      */
     public function iSendARequestWithValues($method, $url, TableNode $post)
     {
+        if ($url[0] === '*') {
+          $url = $this->variableLookup(substr($url, 1));
+        }
         $url = $this->prepareUrl($url);
         $fields = array();
 
@@ -145,6 +160,9 @@ class WebApiContext implements ApiClientAwareContext
      */
     public function iSendARequestWithBody($method, $url, PyStringNode $string)
     {
+        if ($url[0] === '*') {
+          $url = $this->variableLookup(substr($url, 1));
+        }
         $url = $this->prepareUrl($url);
         $string = $this->replacePlaceHolder(trim($string));
 
@@ -170,6 +188,9 @@ class WebApiContext implements ApiClientAwareContext
      */
     public function iSendARequestWithFormData($method, $url, PyStringNode $body)
     {
+        if ($url[0] === '*') {
+          $url = $this->variableLookup(substr($url, 1));
+        }
         $url = $this->prepareUrl($url);
         $body = $this->replacePlaceHolder(trim($body));
 
