@@ -153,6 +153,41 @@ abstract class WebApiContext implements ApiClientAwareContext
     }
 
     /**
+     * Sends HTTP request to specific URL with query string values from Table.
+     *
+     * @param string    $method request method
+     * @param string    $url    relative url
+     * @param TableNode $query  table of query values
+     *
+     * @When /^(?:I )?send a GET request to "([^"]+)" having query:$/
+     */
+    public function iSendARequestHavingQuery($url, TableNode $query)
+    {
+        if ($url[0] === '*') {
+          $url = $this->variableLookup(substr($url, 1));
+        }
+        $url = $this->prepareUrl($url);
+        $fields = array();
+
+        foreach ($query->getRowsHash() as $key => $val) {
+            $fields[$key] = $this->replacePlaceHolder($val);
+        }
+
+        $this->request = $this->getClient()->createRequest('GET', $url);
+        if (!empty($this->headers)) {
+            $this->request->addHeaders($this->headers);
+        }
+        if (!empty($fields)) {
+          $q = $this->request->getQuery();
+          foreach ($fields as $key => $val) {
+            $q[$key] = $val;
+          }
+        }
+
+        $this->sendRequest();
+    }
+
+    /**
      * Sends HTTP request to specific URL with raw body from PyString.
      *
      * @param string       $method request method
