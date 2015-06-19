@@ -92,6 +92,9 @@ abstract class WebApiContext implements ApiClientAwareContext
      */
     public function iSetHeaderWithValue($name, $value)
     {
+        if ($value[0] === '*') {
+          $value = $this->variableLookup(substr($value, 1));
+        }
         $this->addHeader($name, $value);
     }
 
